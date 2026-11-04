@@ -182,6 +182,7 @@ final class LensFlow {
     }
 
     func showSteps() {
+        Log.info("lens.tap", "steps; \(lastAnswer?.steps.count ?? 0) steps")
         guard let steps = lastAnswer?.steps, !steps.isEmpty else { return }
         showGuide(steps.enumerated().map { GuidePage(title: "Step \($0.offset + 1)", body: $0.element) }, 0)
     }
@@ -375,7 +376,8 @@ final class LensFlow {
         if next >= pages.count {
             stopLive()
             if let c = currentContract { return showFinal(c) }
-            return showAnswer()
+            // Back to idle, not the answer card: its first button is Steps, so a pinch would loop into the guide forever.
+            return reset()
         }
         showGuide(pages, next)
     }

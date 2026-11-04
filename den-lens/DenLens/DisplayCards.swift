@@ -141,10 +141,19 @@ enum Cards {
                 Image(uri: url.absoluteString, sizePreset: .fill, cornerRadius: .medium)
             }
             if !page.body.isEmpty { Text(clip(page.body, image == nil && page.imageURL == nil ? 280 : 120), style: .body) }
+            // Watch me gets its own row and the initial focus: one pinch starts it, no swipe across a crowded row.
+            if let onWatch, live == nil {
+                ButtonGroup { Button(label: "Watch me", style: .primary, onClick: tap(onWatch)).actionRole(.primary) }
+            }
             ButtonGroup {
                 Button(label: "Back", style: .secondary, iconName: .triangleLeftVerticalLine, onClick: tap(onBack))
-                if let onWatch { Button(label: live == nil ? "Watch me" : "Stop", style: .outline, onClick: tap(onWatch)) }
-                Button(label: index + 1 == count ? "Finish" : "Next", style: .primary, iconName: .triangleRightVerticalLine, onClick: tap(onNext)).actionRole(.primary)
+                if let onWatch, live != nil { Button(label: "Stop", style: .outline, onClick: tap(onWatch)) }
+                if onWatch != nil, live == nil {
+                    Button(label: index + 1 == count ? "Finish" : "Next", style: .secondary, iconName: .triangleRightVerticalLine, onClick: tap(onNext))
+                }
+                if onWatch == nil || live != nil {
+                    Button(label: index + 1 == count ? "Finish" : "Next", style: .primary, iconName: .triangleRightVerticalLine, onClick: tap(onNext)).actionRole(.primary)
+                }
             }
         }
         .padding(24)

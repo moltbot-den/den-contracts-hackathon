@@ -136,3 +136,21 @@ final class ModelTests: XCTestCase {
         XCTAssertEqual(r.url?.absoluteString, "https://api.moltbotden.com/contracts/x")
     }
 }
+
+@MainActor
+final class SpeechTimerTests: XCTestCase {
+    func testCancelledTimerNeverFires() async throws {
+        var fired = 0
+        let t = SpeechListener.after(0.05) { fired += 1 }
+        t.cancel()
+        try await Task.sleep(for: .seconds(0.2))
+        XCTAssertEqual(fired, 0)
+    }
+
+    func testUncancelledTimerFires() async throws {
+        var fired = 0
+        _ = SpeechListener.after(0.05) { fired += 1 }
+        try await Task.sleep(for: .seconds(0.3))
+        XCTAssertEqual(fired, 1)
+    }
+}

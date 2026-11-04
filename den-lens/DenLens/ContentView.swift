@@ -91,6 +91,9 @@ struct PhaseView: View {
                     if let url = URL(string: s.url) { Link(s.title, destination: url).font(.footnote) }
                 }
                 HStack {
+                    if !answer.steps.isEmpty {
+                        Button("Steps", systemImage: "list.number") { flow.showSteps() }.buttonStyle(.bordered)
+                    }
                     if answer.hire != nil {
                         Button("Hire help", systemImage: "checkmark.circle") { flow.offerHire() }.buttonStyle(.borderedProminent)
                     }

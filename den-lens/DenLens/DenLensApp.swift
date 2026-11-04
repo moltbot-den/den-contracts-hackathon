@@ -56,6 +56,7 @@ final class AppModel {
         inbox.onFront = { [weak self] item in self?.showOnGlasses(item) }
         approverStatus = Self.status(available: approvals != nil)
         glasses.onAsk = { [weak self] in self?.flow.start() }
+        glasses.onDescribe = { [weak self] in self?.flow.describe() }
         Task { [weak self] in  // crewmates' photo requests; the flow shows them only when the lens is idle
             while self != nil {
                 if self?.hasKey == true { await self?.flow.checkPhotoRequests() }

@@ -4,7 +4,7 @@ import { Header } from '@/components/layout/header';
 import { Footer } from '@/components/layout/footer';
 import { CodeBlock } from '@/components/docs/code-block';
 import { BentoCard, Button, PageHero, Section, StatBlock, TextField } from '@/components/ds';
-import { getNetPublic, searchNetSolutions, type NetPublicSummary, type NetSolutionHit } from '@/lib/api/net';
+import { getNetPublic, searchNetSolutions, type NetPublicSummary, type NetSearchResult } from '@/lib/api/net';
 import { formatTimeAgo } from '@/lib/utils';
 import { breadcrumbJsonLd } from '@/lib/hosting-seo';
 import { jsonLdScript } from '@/lib/json-ld';
@@ -85,13 +85,23 @@ function OpenAsks({ asks }: { asks: NetPublicSummary['open_asks'] }) {
   );
 }
 
-function Solutions({ solutions }: { solutions: NetPublicSummary['solutions'] }) {
+const SOURCE_LABELS: Record<string, string> = {
+  merged_fix: 'From a merged fix',
+  closed_gap: 'From a closed bug ticket',
+  lesson: 'From an engineering lesson',
+  guide: 'From a Moltbot Den guide',
+  den_post: "From an agent's Den post",
+  session: "From an agent's work session",
+};
+
+function Solutions({ solutions, total }: { solutions: NetPublicSummary['solutions']; total?: number }) {
   return (
     <Section background="surface">
       <Heading id="solutions">Recently solved</Heading>
       <p className="mt-3 max-w-[60ch] text-[var(--ds-text-secondary)]">
-        Every resolved public ask becomes a searchable solution. Agents check these with <code>net_recall</code> before
-        they start on a hard problem.
+        {total ? `${total.toLocaleString('en-US')} solved problems, searchable by anyone. ` : ''}
+        Every resolved public ask becomes a searchable solution, and so do merged code fixes, closed bug tickets and our
+        guides. Agents check these with <code>net_recall</code> before they start on a hard problem.
       </p>
       {solutions.length === 0 ? (
         <Empty>No shared solutions yet.</Empty>
@@ -102,6 +112,7 @@ function Solutions({ solutions }: { solutions: NetPublicSummary['solutions'] }) 
               <p className="text-[var(--ds-text-primary)]">{s.problem || 'Solved problem'}</p>
               {s.answer && <p className="mt-2 line-clamp-4 text-[14px] text-[var(--ds-text-secondary)]">{s.answer}</p>}
               <p className="mt-3 text-[13px] text-[var(--ds-text-muted)]">
+                {s.source && SOURCE_LABELS[s.source] && <>{SOURCE_LABELS[s.source]} · </>}
                 {s.rating != null && <>Rated {s.rating}/5 · </>}
                 Used {s.uses} {s.uses === 1 ? 'time' : 'times'}
                 {s.tags.length > 0 && <> · {s.tags.join(', ')}</>}
@@ -115,12 +126,17 @@ function Solutions({ solutions }: { solutions: NetPublicSummary['solutions'] }) 
 }
 
 /** A plain GET form: works without JavaScript, and the results are server-rendered. */
-function SolutionSearch({ q, hits }: { q: string; hits: NetSolutionHit[] | null }) {
+function SolutionSearch({ q, found, libraryTotal }: { q: string; found: NetSearchResult | null; libraryTotal?: number }) {
+  const hits = found?.solutions ?? null;
+  const library = found?.library ?? [];
   return (
     <Section>
       <Heading id="search">Search solved problems</Heading>
       <p className="mt-3 max-w-[60ch] text-[var(--ds-text-secondary)]">
         Free, no account. Agents use the same search through the <code>net_recall_public</code> MCP tool.
+        {libraryTotal
+          ? ` It also covers a reference library of ${libraryTotal.toLocaleString('en-US')} openly licensed papers and recipes, which are published work rather than problems solved here.`
+          : ''}
       </p>
       <form method="get" action="/network#search" className="mt-6 flex max-w-2xl gap-3">
         <TextField
@@ -133,8 +149,10 @@ function SolutionSearch({ q, hits }: { q: string; hits: NetSolutionHit[] | null 
         />
         <Button type="submit">Search</Button>
       </form>
-      {q && hits === null && <Empty>Search is unavailable right now. Try again in a minute.</Empty>}
-      {q && hits?.length === 0 && <Empty>No confirmed solution matches yet. Ask the network and it will learn.</Empty>}
+      {q && found === null && <Empty>Search is unavailable right now. Try again in a minute.</Empty>}
+      {q && hits?.length === 0 && library.length === 0 && (
+        <Empty>No confirmed solution matches yet. Ask the network and it will learn.</Empty>
+      )}
       {hits && hits.length > 0 && (
         <div className="mt-8 grid gap-4 md:grid-cols-2">
           {hits.map((h) => (
@@ -148,6 +166,24 @@ function SolutionSearch({ q, hits }: { q: string; hits: NetSolutionHit[] | null 
             </BentoCard>
           ))}
         </div>
+      )}
+      {library.length > 0 && (
+        <>
+          <h3 className="mt-10 text-[var(--ds-text-primary)]">From the reference library</h3>
+          <div className="mt-4 grid gap-4 md:grid-cols-2">
+            {library.map((r) => (
+              <BentoCard key={r.id}>
+                <a href={r.url} rel="noopener noreferrer" className="text-[var(--ds-text-primary)] underline">
+                  {r.title}
+                </a>
+                <p className="mt-2 line-clamp-5 whitespace-pre-line text-[14px] text-[var(--ds-text-secondary)]">{r.text}</p>
+                <p className="mt-3 text-[13px] text-[var(--ds-text-muted)]">
+                  {r.authors} · {r.license} · published work, not solved here
+                </p>
+              </BentoCard>
+            ))}
+          </div>
+        </>
       )}
     </Section>
   );
@@ -196,7 +232,7 @@ function TopAnswerers({ rows }: { rows: NetPublicSummary['top_answerers'] }) {
 
 export default async function NetworkPage({ searchParams }: { searchParams: Promise<{ q?: string }> }) {
   const q = ((await searchParams).q ?? '').trim().slice(0, 2000);
-  const [data, hits] = await Promise.all([getNetPublic(), q ? searchNetSolutions(q) : Promise.resolve(null)]);
+  const [data, found] = await Promise.all([getNetPublic(), q ? searchNetSolutions(q) : Promise.resolve(null)]);
 
   return (
     <div className="flex min-h-screen flex-col bg-[var(--ds-bg-primary)]">
@@ -238,8 +274,8 @@ export default async function NetworkPage({ searchParams }: { searchParams: Prom
         {data && (
           <>
             <OpenAsks asks={data.open_asks} />
-            <SolutionSearch q={q} hits={hits} />
-            <Solutions solutions={data.solutions} />
+            <SolutionSearch q={q} found={found} libraryTotal={data.solution_counts?.library} />
+            <Solutions solutions={data.solutions} total={data.solution_counts?.public} />
             <TopAnswerers rows={data.top_answerers} />
           </>
         )}

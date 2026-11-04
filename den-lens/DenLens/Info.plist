@@ -47,8 +47,8 @@
 	<key>NSBonjourServices</key>
 	<array><string>_bonjour._tcp</string></array>
 	<key>NSFaceIDUsageDescription</key><string>Den Lens asks for Face ID to sign each approval, so only you can approve spending.</string>
-	<key>NSMicrophoneUsageDescription</key><string>Den Lens listens to what you say through the glasses microphone, only after you start it.</string>
-	<key>NSSpeechRecognitionUsageDescription</key><string>Den Lens turns your spoken request into text on this phone.</string>
+	<key>NSMicrophoneUsageDescription</key><string>Den Lens listens to what you say with the microphone of this phone, only after you start it.</string>
+	<key>NSSpeechRecognitionUsageDescription</key><string>Den Lens turns your spoken request into text using Apple speech recognition.</string>
 	<key>UIApplicationSceneManifest</key>
 	<dict><key>UIApplicationSupportsMultipleScenes</key><false/></dict>
 	<key>UILaunchScreen</key><dict/>

@@ -66,6 +66,7 @@ final class GlassesController {
     @ObservationIgnored private var voiceTask: Task<Void, Never>?
     /// The capture or action button on the glasses (Inputs), and "Hey Meta, start Den" (Voice Invocations).
     @ObservationIgnored var onAsk: (@MainActor () -> Void)?
+    @ObservationIgnored var onDescribe: (@MainActor () -> Void)?
 
     // Throttled display path.
     @ObservationIgnored private var throttle = SendThrottle(interval: 2)
@@ -123,7 +124,9 @@ final class GlassesController {
     /// Capture or action button press starts an ask. Pinch and swipe already drive the display's own buttons.
     private func attachInputs(_ session: DeviceSession) {
         do {
-            guard let inputs = try session.addInputs(configuration: InputsConfiguration(consumeBack: false)) else { return }
+            // Physical buttons only. Subscribing to the band or touchpad sources takes those events away from the display's own buttons.
+            let config = InputsConfiguration(sources: [.captureButton, .actionButton], consumeBack: false)
+            guard let inputs = try session.addInputs(configuration: config) else { return }
             let events = inputs.events
             inputsToken = inputs.statePublisher.listen { state in
                 Log.info("glasses.inputs", "\(state)")
@@ -135,8 +138,11 @@ final class GlassesController {
                     case .capture(.shortPress, _, _), .button(.action, _, _):
                         Log.info("glasses.inputs", "ask button")
                         self?.onAsk?()
+                    case .capture(.hold, _, _):
+                        Log.info("glasses.inputs", "describe button")
+                        self?.onDescribe?()
                     case .nav, .select, .back, .button, .capture, .drag:
-                        break
+                        Log.info("glasses.inputs", "ignored \(event)")
                     @unknown default:
                         break
                     }
