@@ -273,3 +273,12 @@ async def test_a_retried_create_with_the_same_key_returns_the_first_contract():
     other = await create_contract(_body(idempotency_key=key), STRANGER)  # keys are per owner
     assert other["id"] != first["id"]
     assert (await create_contract(_body(), OWNER))["id"] != first["id"]  # no key: always a new contract
+
+
+def test_event_note_gives_the_lens_plain_words():
+    from routers.contracts import _event_note
+
+    assert _event_note({"type": "job.state", "to_state": "running", "payload": {"verdict": "fail"}}) == "Failed review, reworking"
+    assert _event_note({"type": "job.state", "to_state": "passed", "payload": {"verdict": "pass"}}) == "Passed review"
+    assert _event_note({"type": "contract.state", "to_state": "hiring", "payload": {}}) == "Hiring agents"
+    assert _event_note({"type": "progress", "to_state": None, "payload": {}}) is None

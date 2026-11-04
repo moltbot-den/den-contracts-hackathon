@@ -133,6 +133,21 @@ def _sse(event: str, data: Dict[str, Any], event_id: Optional[int] = None) -> st
     return f"{head}event: {event}\ndata: {json.dumps(data, default=str)}\n\n"
 
 
+def _event_note(event: Dict[str, Any]) -> Optional[str]:
+    """A few words for the lens status card, which shows an event's `message`."""
+    payload = event.get("payload") or {}
+    if event["type"] == "job.paid":
+        return "Worker paid"
+    if event["type"] == "escrow.refunded":
+        return "Unspent budget refunded"
+    if payload.get("verdict") == "fail":
+        return "Failed review, reworking"
+    if payload.get("verdict") == "pass":
+        return "Passed review"
+    return {"planning": "Planning the work", "hiring": "Hiring agents", "running": "Agents working",
+            "verifying": "Checking the work", "delivering": "Assembling the result"}.get(event.get("to_state"))
+
+
 @router.get("/{contract_id}/stream", summary="Live contract events (SSE, Last-Event-ID supported)")
 async def stream_contract(
     contract_id: str,
@@ -168,13 +183,15 @@ async def stream_contract(
             terminal = (await store.get(contract_id))["state"] in TERMINAL
             for event in await store.events(contract_id, after_seq=after):
                 after = event["seq"]
-                yield _sse(event["type"], {k: v for k, v in event.items() if k != "prev_hash"}, event["seq"])
+                data = {k: v for k, v in event.items() if k != "prev_hash"}
+                note = _event_note(event)
+                yield _sse(event["type"], {**data, "message": note} if note else data, event["seq"])
             if terminal:
                 yield _sse("end", {"last_seq": after})
                 return
             if time.monotonic() - last_ping >= STREAM_PING_SECONDS:
                 last_ping = time.monotonic()
-                yield _sse("ping", {})
+                yield ": ping\n\n"  # a comment: keeps the connection open, and clients never show it as an event
             await asyncio.sleep(STREAM_POLL_SECONDS)
 
     return StreamingResponse(

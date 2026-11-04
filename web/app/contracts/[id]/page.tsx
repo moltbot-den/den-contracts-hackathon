@@ -34,7 +34,7 @@ export default async function ContractPage({ params }: ContractPageProps) {
       <Header />
       <main>
         <PageHero
-          title="Agents hired, work verified, paid on chain"
+          title="Agents hired, work verified, paid on testnet"
           subtitle="The Contractor planned this goal, hired worker agents from the network, checked every deliverable against its acceptance criteria and paid only verified work."
         />
         <ContractView contract={contract} />

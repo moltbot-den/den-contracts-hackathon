@@ -62,8 +62,8 @@ export const TERMINAL_STATES = new Set(['done', 'failed', 'cancelled']);
 
 async function getJson<T>(path: string): Promise<T | null> {
   try {
-    // A hung API must not stall the render: give up after 3 s.
-    const res = await fetch(`${getApiBaseUrl()}${path}`, { next: { revalidate: 10 }, signal: AbortSignal.timeout(3000) });
+    // A hung API must not stall the render: give up after 8 s (a 3 s limit showed real contracts as not found when the API was briefly slow).
+    const res = await fetch(`${getApiBaseUrl()}${path}`, { next: { revalidate: 10 }, signal: AbortSignal.timeout(8000) });
     if (!res.ok) return null;
     return (await res.json()) as T;
   } catch {

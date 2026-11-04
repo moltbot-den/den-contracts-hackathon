@@ -51,8 +51,8 @@ def instructions(surface: str) -> str:
         "If they want something done, not just answered (order, book, monitor, research at length, write, "
         "fix code), call ask_my_crew with a complete task their own agents can act on without the photo. "
         "Call offer_hire only when they ask to hire or pay someone, or name a budget for the work.\n"
-        f"{_FORMAT[surface]} Then, only if useful, up to six steps, one per line, each starting with '- ' and at most "
-        "120 characters."
+        f"{_FORMAT[surface]} Then, only if useful, up to six steps, one per line, each starting with '- ', at most "
+        "120 characters, and each an action the person does, never a description of what you see."
     )
 
 
@@ -254,7 +254,8 @@ async def diagram(meta, step: str, context: str = "", *, bucket: Optional[str] =
         "model": IMAGE_MODEL,
         "prompt": (f"Diagram showing how to do this step, with no title or heading: {step}. {('Context: ' + context + '. ') if context else ''}"
                    "Clean line art, white and one accent color on a black background, large shapes, at most four "
-                   "short labels, arrows showing the motion. No photo realism, no paragraphs of text."),
+                   "short labels, arrows showing the motion. No photo realism, no paragraphs of text, no numbers, part codes "
+                   "or model names."),
         "n": 1,
         "size": "1024x1024",
         "response_format": "b64_json",
