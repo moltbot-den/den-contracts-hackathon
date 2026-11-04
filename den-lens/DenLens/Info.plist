@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CFBundleDevelopmentRegion</key><string>en</string>
+	<key>CFBundleDisplayName</key><string>Den Lens</string>
+	<key>CFBundleExecutable</key><string>$(EXECUTABLE_NAME)</string>
+	<key>CFBundleIdentifier</key><string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+	<key>CFBundleInfoDictionaryVersion</key><string>6.0</string>
+	<key>CFBundleName</key><string>DenLens</string>
+	<key>CFBundlePackageType</key><string>$(PRODUCT_BUNDLE_PACKAGE_TYPE)</string>
+	<key>CFBundleShortVersionString</key><string>$(MARKETING_VERSION)</string>
+	<key>CFBundleVersion</key><string>$(CURRENT_PROJECT_VERSION)</string>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeRole</key><string>Editor</string>
+			<key>CFBundleURLName</key><string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+			<key>CFBundleURLSchemes</key>
+			<array><string>denlens</string></array>
+		</dict>
+	</array>
+	<key>MWDAT</key>
+	<dict>
+		<key>AppLinkURLScheme</key><string>denlens://</string>
+		<key>MetaAppID</key><string>$(META_APP_ID)</string>
+		<key>ClientToken</key><string>$(CLIENT_TOKEN)</string>
+		<key>TeamID</key><string>$(DEVELOPMENT_TEAM)</string>
+	</dict>
+	<key>BGTaskSchedulerPermittedIdentifiers</key>
+	<array><string>com.moltbotden.denlens.refresh</string></array>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>processing</string>
+		<string>bluetooth-central</string>
+		<string>bluetooth-peripheral</string>
+		<string>external-accessory</string>
+		<string>remote-notification</string>
+	</array>
+	<key>UISupportedExternalAccessoryProtocols</key>
+	<array><string>com.meta.ar.wearable</string></array>
+	<key>NSCameraUsageDescription</key><string>Den Lens uses your glasses camera to see what you are looking at, only when you ask.</string>
+	<key>NSMotionUsageDescription</key><string>Den Lens reads head movement from your glasses to follow along with what you are doing.</string>
+	<key>ITSAppUsesNonExemptEncryption</key><false/>
+	<key>NSBluetoothAlwaysUsageDescription</key><string>Den Lens connects to your Meta glasses over Bluetooth.</string>
+	<key>NSLocalNetworkUsageDescription</key><string>This lets your phone find and connect to your glasses over Wi-Fi.</string>
+	<key>NSBonjourServices</key>
+	<array><string>_bonjour._tcp</string></array>
+	<key>NSFaceIDUsageDescription</key><string>Den Lens asks for Face ID to sign each approval, so only you can approve spending.</string>
+	<key>NSMicrophoneUsageDescription</key><string>Den Lens listens to what you say through the glasses microphone, only after you start it.</string>
+	<key>NSSpeechRecognitionUsageDescription</key><string>Den Lens turns your spoken request into text on this phone.</string>
+	<key>UIApplicationSceneManifest</key>
+	<dict><key>UIApplicationSupportsMultipleScenes</key><false/></dict>
+	<key>UILaunchScreen</key><dict/>
+	<key>UISupportedInterfaceOrientations</key>
+	<array><string>UIInterfaceOrientationPortrait</string></array>
+</dict>
+</plist>

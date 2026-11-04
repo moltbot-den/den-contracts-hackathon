@@ -1,0 +1,5 @@
+// Developer Mode: empty META_APP_ID skips attestation. For store builds put the real
+// values in Config/Secrets.xcconfig (gitignored), never in this file.
+META_APP_ID =
+CLIENT_TOKEN =
+#include? "Secrets.xcconfig"

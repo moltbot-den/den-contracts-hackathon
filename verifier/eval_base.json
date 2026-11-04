@@ -1,0 +1,9 @@
+{
+  "model": "unsloth/Muse-Glimmer-30B-unsloth-bnb-4bit",
+  "per_example_s": 3.5042196811503956,
+  "n": 758,
+  "parsed": 0.7546174142480211,
+  "verdict_accuracy": 0.6688654353562006,
+  "criterion_fail_f1": 0.6252390057361377,
+  "false_pass_rate": 0.4419889502762431
+}

@@ -1,0 +1,9 @@
+{
+  "model": "OneFrequency/den-verifier-glimmer-30b-lora",
+  "per_example_s": 4.51162837192876,
+  "n": 758,
+  "parsed": 1.0,
+  "verdict_accuracy": 0.9802110817941952,
+  "criterion_fail_f1": 0.9740740740740741,
+  "false_pass_rate": 0.020257826887661142
+}

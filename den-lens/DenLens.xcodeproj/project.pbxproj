@@ -1,0 +1,597 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		10619F3A4972F206A369F30E /* Log.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28928E49295BAE778A4D7043 /* Log.swift */; };
+		10C6FC519B1EECC3008B9138 /* MWDATCore in Frameworks */ = {isa = PBXBuildFile; productRef = BB79BF78126F559A904DA2AC /* MWDATCore */; };
+		1129A679AC71D994E67F3051 /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7CF383969BA5462EF803340 /* Models.swift */; };
+		1879F57E8B985A117DB492A3 /* MWDATMockDevice in Frameworks */ = {isa = PBXBuildFile; productRef = 2099C9DE0024B5BB384B08D7 /* MWDATMockDevice */; };
+		1BF7CE945BA9DBD758EFE905 /* InboxTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 596CD3006C4D9E65ACD084A7 /* InboxTests.swift */; };
+		332B415D6A0D628E636B247F /* MWDATCamera in Frameworks */ = {isa = PBXBuildFile; productRef = 62F322970B8660509186C6E7 /* MWDATCamera */; };
+		3517BD7A9D9874AC0CA09CA1 /* ApproverInbox.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E5B401AB30F07A354C4F200 /* ApproverInbox.swift */; };
+		7308D0EA236AF4DA8391B167 /* MWDATSpeech in Frameworks */ = {isa = PBXBuildFile; productRef = 71EFB932642C006D5926AE6F /* MWDATSpeech */; };
+		7773F573EBDE8D14B324D5D8 /* SendThrottle.swift in Sources */ = {isa = PBXBuildFile; fileRef = F05549562D58B7503A64C080 /* SendThrottle.swift */; };
+		7B5C23083391ACA11869AD6F /* LensFlow.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0CE9D759BF5FA2FDECCFE6D /* LensFlow.swift */; };
+		85349723E14FEBE53C38C62A /* MWDATInputs in Frameworks */ = {isa = PBXBuildFile; productRef = 7CACCF60378AC40B76E559C2 /* MWDATInputs */; };
+		8771BF05E1D40C0EE753D60C /* ApprovalTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80BC6D0309EDCB4E94E23E70 /* ApprovalTests.swift */; };
+		8C49F857A64127BB8AB6B9DF /* MWDATDisplay in Frameworks */ = {isa = PBXBuildFile; productRef = 65EF4CD989A827C96828025B /* MWDATDisplay */; };
+		98C54E45BDCD4A4936722869 /* ApprovalService.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADEE2A7AA528FA988AAE3F06 /* ApprovalService.swift */; };
+		B177C94F9C74C45786414E71 /* DenLensApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFA8A97C5158C85BC2620AA7 /* DenLensApp.swift */; };
+		B47D5B1A92D27F99DB0492C7 /* Sentry in Frameworks */ = {isa = PBXBuildFile; productRef = 2A44DCCC4CE6C9C2C4517008 /* Sentry */; };
+		B8A7ADAA2AB76F41DA529663 /* DisplayCards.swift in Sources */ = {isa = PBXBuildFile; fileRef = 98EF8EAB6C8328BA6AA2ACAB /* DisplayCards.swift */; };
+		B9E930B1E1AAD7D17C7A6305 /* LogicTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D2F4464F6B3911AD7111AF0 /* LogicTests.swift */; };
+		C6D0642CAC921F90E645A9C8 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 3D379C4CCDA234397466ACEC /* Assets.xcassets */; };
+		C7BE286B12E39D03C8CF832F /* GlassesController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99B8C083ECFF6622F5CBBA96 /* GlassesController.swift */; };
+		CA3125C5342A1796ED72861E /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B4DCE0E42538430AF83D4DB /* ContentView.swift */; };
+		D05146482103F56C5A862873 /* ApprovalSigner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44A2C3369C806BACB0625645 /* ApprovalSigner.swift */; };
+		D1014D19372E90C5C258283E /* MockDeviceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1D65D460BE5FDC3445BA608 /* MockDeviceTests.swift */; };
+		DC9EF59D2115F26417408AED /* GuidePages.swift in Sources */ = {isa = PBXBuildFile; fileRef = A30EAE788E811B0248145CF6 /* GuidePages.swift */; };
+		DD3375EAB3C4EABF8C208388 /* Keychain.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00E24FF30B3B7C62AF31FFCC /* Keychain.swift */; };
+		E2E3E87842C28C5DF114B505 /* LensAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6B40B971B5AEC985B9A2DAA /* LensAPI.swift */; };
+		E303B551F6B80446B5DE9244 /* SpeechListener.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2E3025D99E20FF298E3B736 /* SpeechListener.swift */; };
+		EC22CE9D1E36D9D76656FF63 /* SSE.swift in Sources */ = {isa = PBXBuildFile; fileRef = 278A745FAB0BD97537059CB9 /* SSE.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		22A05B1EFA149ED581DDFFD1 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 1961E78C518C099B78A14760 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 29250D3F4E0D47B9001A6F1E;
+			remoteInfo = DenLens;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		00E24FF30B3B7C62AF31FFCC /* Keychain.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Keychain.swift; sourceTree = "<group>"; };
+		07454A5C0F52C8F1BBE35C0D /* DenLens.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = DenLens.entitlements; sourceTree = "<group>"; };
+		0B4DCE0E42538430AF83D4DB /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		278A745FAB0BD97537059CB9 /* SSE.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SSE.swift; sourceTree = "<group>"; };
+		28928E49295BAE778A4D7043 /* Log.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Log.swift; sourceTree = "<group>"; };
+		2E5B401AB30F07A354C4F200 /* ApproverInbox.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApproverInbox.swift; sourceTree = "<group>"; };
+		370F220E0E6F9A5FC15E6BA4 /* DenLens.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = DenLens.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		3D379C4CCDA234397466ACEC /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		44A2C3369C806BACB0625645 /* ApprovalSigner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApprovalSigner.swift; sourceTree = "<group>"; };
+		4D2F4464F6B3911AD7111AF0 /* LogicTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogicTests.swift; sourceTree = "<group>"; };
+		596CD3006C4D9E65ACD084A7 /* InboxTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InboxTests.swift; sourceTree = "<group>"; };
+		80BC6D0309EDCB4E94E23E70 /* ApprovalTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApprovalTests.swift; sourceTree = "<group>"; };
+		98EF8EAB6C8328BA6AA2ACAB /* DisplayCards.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DisplayCards.swift; sourceTree = "<group>"; };
+		99B8C083ECFF6622F5CBBA96 /* GlassesController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlassesController.swift; sourceTree = "<group>"; };
+		A30EAE788E811B0248145CF6 /* GuidePages.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GuidePages.swift; sourceTree = "<group>"; };
+		A6B40B971B5AEC985B9A2DAA /* LensAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LensAPI.swift; sourceTree = "<group>"; };
+		A7CF383969BA5462EF803340 /* Models.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models.swift; sourceTree = "<group>"; };
+		ADEE2A7AA528FA988AAE3F06 /* ApprovalService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApprovalService.swift; sourceTree = "<group>"; };
+		AECDCCF8D53C152F33797CF2 /* Base.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Base.xcconfig; sourceTree = "<group>"; };
+		C1D65D460BE5FDC3445BA608 /* MockDeviceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockDeviceTests.swift; sourceTree = "<group>"; };
+		C47BD4196637E13BAB5B8ECE /* DenLensTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = DenLensTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		D2E3025D99E20FF298E3B736 /* SpeechListener.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpeechListener.swift; sourceTree = "<group>"; };
+		E0CE9D759BF5FA2FDECCFE6D /* LensFlow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LensFlow.swift; sourceTree = "<group>"; };
+		EFA8A97C5158C85BC2620AA7 /* DenLensApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DenLensApp.swift; sourceTree = "<group>"; };
+		F05549562D58B7503A64C080 /* SendThrottle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SendThrottle.swift; sourceTree = "<group>"; };
+		F1C8FCD43B261AABACED7DBD /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		7EF725E3DE9747208F1763D9 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				10C6FC519B1EECC3008B9138 /* MWDATCore in Frameworks */,
+				332B415D6A0D628E636B247F /* MWDATCamera in Frameworks */,
+				8C49F857A64127BB8AB6B9DF /* MWDATDisplay in Frameworks */,
+				1879F57E8B985A117DB492A3 /* MWDATMockDevice in Frameworks */,
+				85349723E14FEBE53C38C62A /* MWDATInputs in Frameworks */,
+				7308D0EA236AF4DA8391B167 /* MWDATSpeech in Frameworks */,
+				B47D5B1A92D27F99DB0492C7 /* Sentry in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		1DB14533C08BF98600E5DFCD /* Config */ = {
+			isa = PBXGroup;
+			children = (
+				AECDCCF8D53C152F33797CF2 /* Base.xcconfig */,
+			);
+			path = Config;
+			sourceTree = "<group>";
+		};
+		6F163FABB16288D82F7E26C0 /* DenLens */ = {
+			isa = PBXGroup;
+			children = (
+				ADEE2A7AA528FA988AAE3F06 /* ApprovalService.swift */,
+				44A2C3369C806BACB0625645 /* ApprovalSigner.swift */,
+				2E5B401AB30F07A354C4F200 /* ApproverInbox.swift */,
+				3D379C4CCDA234397466ACEC /* Assets.xcassets */,
+				0B4DCE0E42538430AF83D4DB /* ContentView.swift */,
+				07454A5C0F52C8F1BBE35C0D /* DenLens.entitlements */,
+				EFA8A97C5158C85BC2620AA7 /* DenLensApp.swift */,
+				98EF8EAB6C8328BA6AA2ACAB /* DisplayCards.swift */,
+				99B8C083ECFF6622F5CBBA96 /* GlassesController.swift */,
+				A30EAE788E811B0248145CF6 /* GuidePages.swift */,
+				F1C8FCD43B261AABACED7DBD /* Info.plist */,
+				00E24FF30B3B7C62AF31FFCC /* Keychain.swift */,
+				A6B40B971B5AEC985B9A2DAA /* LensAPI.swift */,
+				E0CE9D759BF5FA2FDECCFE6D /* LensFlow.swift */,
+				28928E49295BAE778A4D7043 /* Log.swift */,
+				A7CF383969BA5462EF803340 /* Models.swift */,
+				F05549562D58B7503A64C080 /* SendThrottle.swift */,
+				D2E3025D99E20FF298E3B736 /* SpeechListener.swift */,
+				278A745FAB0BD97537059CB9 /* SSE.swift */,
+			);
+			path = DenLens;
+			sourceTree = "<group>";
+		};
+		7AD4C302E9A22F6788E127CE = {
+			isa = PBXGroup;
+			children = (
+				1DB14533C08BF98600E5DFCD /* Config */,
+				6F163FABB16288D82F7E26C0 /* DenLens */,
+				A1F35E510E11AA6E06078A61 /* DenLensTests */,
+				97DF33A855D379B16ED13104 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		97DF33A855D379B16ED13104 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				370F220E0E6F9A5FC15E6BA4 /* DenLens.app */,
+				C47BD4196637E13BAB5B8ECE /* DenLensTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		A1F35E510E11AA6E06078A61 /* DenLensTests */ = {
+			isa = PBXGroup;
+			children = (
+				80BC6D0309EDCB4E94E23E70 /* ApprovalTests.swift */,
+				596CD3006C4D9E65ACD084A7 /* InboxTests.swift */,
+				4D2F4464F6B3911AD7111AF0 /* LogicTests.swift */,
+				C1D65D460BE5FDC3445BA608 /* MockDeviceTests.swift */,
+			);
+			path = DenLensTests;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		29250D3F4E0D47B9001A6F1E /* DenLens */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 36693E2EAF217D82C24DF84C /* Build configuration list for PBXNativeTarget "DenLens" */;
+			buildPhases = (
+				B142CC113F8F5F3F6EF0B1A3 /* Sources */,
+				F0907B2036AF7314A0127ED5 /* Resources */,
+				7EF725E3DE9747208F1763D9 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = DenLens;
+			packageProductDependencies = (
+				BB79BF78126F559A904DA2AC /* MWDATCore */,
+				62F322970B8660509186C6E7 /* MWDATCamera */,
+				65EF4CD989A827C96828025B /* MWDATDisplay */,
+				2099C9DE0024B5BB384B08D7 /* MWDATMockDevice */,
+				7CACCF60378AC40B76E559C2 /* MWDATInputs */,
+				71EFB932642C006D5926AE6F /* MWDATSpeech */,
+				2A44DCCC4CE6C9C2C4517008 /* Sentry */,
+			);
+			productName = DenLens;
+			productReference = 370F220E0E6F9A5FC15E6BA4 /* DenLens.app */;
+			productType = "com.apple.product-type.application";
+		};
+		38CC5A857D4FECA788A8D937 /* DenLensTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = D2DE06907E20C2AB3A239773 /* Build configuration list for PBXNativeTarget "DenLensTests" */;
+			buildPhases = (
+				01309C36F2AC30DEFA869949 /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				13B0FAA61079149F3E8909C3 /* PBXTargetDependency */,
+			);
+			name = DenLensTests;
+			packageProductDependencies = (
+			);
+			productName = DenLensTests;
+			productReference = C47BD4196637E13BAB5B8ECE /* DenLensTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		1961E78C518C099B78A14760 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1430;
+				TargetAttributes = {
+					29250D3F4E0D47B9001A6F1E = {
+						DevelopmentTeam = ;
+						ProvisioningStyle = Automatic;
+					};
+					38CC5A857D4FECA788A8D937 = {
+						DevelopmentTeam = ;
+						ProvisioningStyle = Automatic;
+					};
+				};
+			};
+			buildConfigurationList = 0ED7B045C44661CD9143F867 /* Build configuration list for PBXProject "DenLens" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = 7AD4C302E9A22F6788E127CE;
+			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				57384C5FE4E69FD5D87EB335 /* XCRemoteSwiftPackageReference "meta-wearables-dat-ios" */,
+				5008C2336CDB940F8305F377 /* XCRemoteSwiftPackageReference "sentry-cocoa" */,
+			);
+			preferredProjectObjectVersion = 77;
+			productRefGroup = 97DF33A855D379B16ED13104 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				29250D3F4E0D47B9001A6F1E /* DenLens */,
+				38CC5A857D4FECA788A8D937 /* DenLensTests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		F0907B2036AF7314A0127ED5 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C6D0642CAC921F90E645A9C8 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		01309C36F2AC30DEFA869949 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				8771BF05E1D40C0EE753D60C /* ApprovalTests.swift in Sources */,
+				1BF7CE945BA9DBD758EFE905 /* InboxTests.swift in Sources */,
+				B9E930B1E1AAD7D17C7A6305 /* LogicTests.swift in Sources */,
+				D1014D19372E90C5C258283E /* MockDeviceTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B142CC113F8F5F3F6EF0B1A3 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				98C54E45BDCD4A4936722869 /* ApprovalService.swift in Sources */,
+				D05146482103F56C5A862873 /* ApprovalSigner.swift in Sources */,
+				3517BD7A9D9874AC0CA09CA1 /* ApproverInbox.swift in Sources */,
+				CA3125C5342A1796ED72861E /* ContentView.swift in Sources */,
+				B177C94F9C74C45786414E71 /* DenLensApp.swift in Sources */,
+				B8A7ADAA2AB76F41DA529663 /* DisplayCards.swift in Sources */,
+				C7BE286B12E39D03C8CF832F /* GlassesController.swift in Sources */,
+				DC9EF59D2115F26417408AED /* GuidePages.swift in Sources */,
+				DD3375EAB3C4EABF8C208388 /* Keychain.swift in Sources */,
+				E2E3E87842C28C5DF114B505 /* LensAPI.swift in Sources */,
+				7B5C23083391ACA11869AD6F /* LensFlow.swift in Sources */,
+				10619F3A4972F206A369F30E /* Log.swift in Sources */,
+				1129A679AC71D994E67F3051 /* Models.swift in Sources */,
+				EC22CE9D1E36D9D76656FF63 /* SSE.swift in Sources */,
+				7773F573EBDE8D14B324D5D8 /* SendThrottle.swift in Sources */,
+				E303B551F6B80446B5DE9244 /* SpeechListener.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		13B0FAA61079149F3E8909C3 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 29250D3F4E0D47B9001A6F1E /* DenLens */;
+			targetProxy = 22A05B1EFA149ED581DDFFD1 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		027FD0AE7F599388A32C54C8 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = DenLens/DenLens.entitlements;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = DenLens/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.moltbotden.denlens;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Debug;
+		};
+		A82387165E9D14344AB85BA9 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = AECDCCF8D53C152F33797CF2 /* Base.xcconfig */;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 2;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = ;
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 27.0;
+				MARKETING_VERSION = 0.1.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 6.0;
+			};
+			name = Release;
+		};
+		AA1FC47756322180AFC1C088 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = DenLens/DenLens.entitlements;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = DenLens/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.moltbotden.denlens;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Release;
+		};
+		BEBB64774ADE55DBA18E4266 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.moltbotden.denlens.tests;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/DenLens.app/DenLens";
+			};
+			name = Release;
+		};
+		CDDE1A0048FE9C724DBDFEEE /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.moltbotden.denlens.tests;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/DenLens.app/DenLens";
+			};
+			name = Debug;
+		};
+		D521009D7BE456340197E370 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = AECDCCF8D53C152F33797CF2 /* Base.xcconfig */;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 2;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = ;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 27.0;
+				MARKETING_VERSION = 0.1.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 6.0;
+			};
+			name = Debug;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		0ED7B045C44661CD9143F867 /* Build configuration list for PBXProject "DenLens" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D521009D7BE456340197E370 /* Debug */,
+				A82387165E9D14344AB85BA9 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		36693E2EAF217D82C24DF84C /* Build configuration list for PBXNativeTarget "DenLens" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				027FD0AE7F599388A32C54C8 /* Debug */,
+				AA1FC47756322180AFC1C088 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		D2DE06907E20C2AB3A239773 /* Build configuration list for PBXNativeTarget "DenLensTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				CDDE1A0048FE9C724DBDFEEE /* Debug */,
+				BEBB64774ADE55DBA18E4266 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		5008C2336CDB940F8305F377 /* XCRemoteSwiftPackageReference "sentry-cocoa" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/getsentry/sentry-cocoa";
+			requirement = {
+				kind = exactVersion;
+				version = 9.30.1;
+			};
+		};
+		57384C5FE4E69FD5D87EB335 /* XCRemoteSwiftPackageReference "meta-wearables-dat-ios" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/facebook/meta-wearables-dat-ios";
+			requirement = {
+				kind = exactVersion;
+				version = 1.0.1;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		2099C9DE0024B5BB384B08D7 /* MWDATMockDevice */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 57384C5FE4E69FD5D87EB335 /* XCRemoteSwiftPackageReference "meta-wearables-dat-ios" */;
+			productName = MWDATMockDevice;
+		};
+		2A44DCCC4CE6C9C2C4517008 /* Sentry */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 5008C2336CDB940F8305F377 /* XCRemoteSwiftPackageReference "sentry-cocoa" */;
+			productName = Sentry;
+		};
+		62F322970B8660509186C6E7 /* MWDATCamera */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 57384C5FE4E69FD5D87EB335 /* XCRemoteSwiftPackageReference "meta-wearables-dat-ios" */;
+			productName = MWDATCamera;
+		};
+		65EF4CD989A827C96828025B /* MWDATDisplay */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 57384C5FE4E69FD5D87EB335 /* XCRemoteSwiftPackageReference "meta-wearables-dat-ios" */;
+			productName = MWDATDisplay;
+		};
+		71EFB932642C006D5926AE6F /* MWDATSpeech */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 57384C5FE4E69FD5D87EB335 /* XCRemoteSwiftPackageReference "meta-wearables-dat-ios" */;
+			productName = MWDATSpeech;
+		};
+		7CACCF60378AC40B76E559C2 /* MWDATInputs */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 57384C5FE4E69FD5D87EB335 /* XCRemoteSwiftPackageReference "meta-wearables-dat-ios" */;
+			productName = MWDATInputs;
+		};
+		BB79BF78126F559A904DA2AC /* MWDATCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 57384C5FE4E69FD5D87EB335 /* XCRemoteSwiftPackageReference "meta-wearables-dat-ios" */;
+			productName = MWDATCore;
+		};
+/* End XCSwiftPackageProductDependency section */
+	};
+	rootObject = 1961E78C518C099B78A14760 /* Project object */;
+}

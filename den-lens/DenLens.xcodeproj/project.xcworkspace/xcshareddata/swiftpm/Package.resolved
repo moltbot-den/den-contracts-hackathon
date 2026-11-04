@@ -1,0 +1,24 @@
+{
+  "originHash" : "182e83c84eb0dc25c514b0e9efca180e73409ed3928ad7382a89ada23c0bd6c6",
+  "pins" : [
+    {
+      "identity" : "meta-wearables-dat-ios",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/facebook/meta-wearables-dat-ios",
+      "state" : {
+        "revision" : "0bd369298eef6a980ad0bdb6c8a5502f2c02a08c",
+        "version" : "1.0.1"
+      }
+    },
+    {
+      "identity" : "sentry-cocoa",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/getsentry/sentry-cocoa",
+      "state" : {
+        "revision" : "4f135c52afeeb1d6937eb93824c7ec1cddcaa372",
+        "version" : "9.30.1"
+      }
+    }
+  ],
+  "version" : 3
+}

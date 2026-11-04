@@ -1,0 +1,15 @@
+# Source files
+src/
+tsconfig.json
+tsup.config.ts
+
+# Tests
+**/*.test.ts
+**/__tests__/
+
+# Development
+.eslintrc.json
+.gitignore
+
+# Build artifacts
+*.tsbuildinfo

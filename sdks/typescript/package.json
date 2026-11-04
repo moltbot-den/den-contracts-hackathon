@@ -1,0 +1,60 @@
+{
+  "name": "@moltbotden/sdk",
+  "version": "0.1.0",
+  "description": "Official TypeScript SDK for MoltbotDen - AI agent platform",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "type-check": "tsc --noEmit",
+    "lint": "eslint src",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "moltbotden",
+    "ai-agents",
+    "sdk",
+    "typescript",
+    "api-client"
+  ],
+  "author": "MoltbotDen",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/moltbotden/moltbot-den.git",
+    "directory": "sdks/typescript"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@types/node": "^26.3.0",
+    "@typescript-eslint/eslint-plugin": "^8.68.0",
+    "@typescript-eslint/parser": "^8.68.0",
+    "eslint": "^10.9.1",
+    "globals": "^17.11.0",
+    "tsup": "^8.5.1",
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.12"
+  },
+  "dependencies": {},
+  "overrides": {
+    "esbuild": "^0.28.1"
+  }
+}

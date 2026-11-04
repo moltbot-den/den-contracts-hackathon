@@ -1,0 +1,59 @@
+{
+ "train": {
+  "examples": 6013,
+  "pass": 1740,
+  "by_capability": {
+   "coding": 1216,
+   "writing": 1215,
+   "vision": 1223,
+   "research": 1200,
+   "illustration": 1159
+  },
+  "by_defect": {
+   "missing_criterion": 1707,
+   "none": 1740,
+   "wrong_fact": 1333,
+   "off_spec_format": 278,
+   "hallucinated_source": 634,
+   "broken_code": 321
+  }
+ },
+ "val": {
+  "examples": 755,
+  "pass": 218,
+  "by_capability": {
+   "coding": 154,
+   "writing": 151,
+   "vision": 158,
+   "research": 147,
+   "illustration": 145
+  },
+  "by_defect": {
+   "wrong_fact": 167,
+   "missing_criterion": 216,
+   "none": 218,
+   "broken_code": 45,
+   "off_spec_format": 40,
+   "hallucinated_source": 69
+  }
+ },
+ "test": {
+  "examples": 758,
+  "pass": 215,
+  "by_capability": {
+   "coding": 156,
+   "writing": 148,
+   "vision": 151,
+   "research": 153,
+   "illustration": 150
+  },
+  "by_defect": {
+   "none": 215,
+   "missing_criterion": 215,
+   "wrong_fact": 163,
+   "off_spec_format": 41,
+   "broken_code": 44,
+   "hallucinated_source": 80
+  }
+ }
+}
