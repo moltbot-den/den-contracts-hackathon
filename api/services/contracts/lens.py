@@ -23,8 +23,10 @@ logger = logging.getLogger(__name__)
 DRAFT_MODEL = "muse-spark-1.3"
 SAM_MODEL = "sam-3.1"
 FRAME_MAX_SIDE = 1024
+MAX_PIXELS = 25_000_000  # 5000x5000; decoded RGB is 3 bytes a pixel
 CROP_MAX_SIDE = 600  # the glasses display takes images under 600x600
 CROP_MARGIN = 0.08
+CROP_MIN_FRACTION = 0.4  # of the frame\'s longest side; still far from the full frame
 DEFAULT_BUDGET_CENTS = 1_000
 MIN_BUDGET_CENTS, MAX_BUDGET_CENTS = 100, 5_000  # same bounds as POST /contracts
 EVIDENCE_BUCKET = "moltbotden-contracts-evidence"
@@ -62,8 +64,10 @@ def normalize_frame(jpeg: bytes) -> Tuple[Image.Image, bytes]:
     """Decode, cap the longest side and re-encode, which also drops EXIF (location, device)."""
     try:
         img = Image.open(io.BytesIO(jpeg))
+        if img.width * img.height > MAX_PIXELS:  # a tiny PNG can declare gigapixels; reject before decoding
+            raise LensError("image is too large")
         img.load()
-    except (UnidentifiedImageError, OSError) as e:
+    except (UnidentifiedImageError, OSError, Image.DecompressionBombError) as e:
         raise LensError("image is not a readable JPEG or PNG") from e
     img = img.convert("RGB")
     img.thumbnail((FRAME_MAX_SIDE, FRAME_MAX_SIDE))
@@ -92,8 +96,13 @@ def sam_prompts(label: str) -> list:
 
 def crop(img: Image.Image, box: Tuple[int, int, int, int]) -> bytes:
     x1, y1, x2, y2 = box
-    mx, my = int((x2 - x1) * CROP_MARGIN), int((y2 - y1) * CROP_MARGIN)
-    piece = img.crop((max(0, x1 - mx), max(0, y1 - my), min(img.width, x2 + mx), min(img.height, y2 + my)))
+    # A small target needs its surroundings: a worker or a wearer cannot read a 100-pixel crop.
+    floor = max(img.size) * CROP_MIN_FRACTION
+    w = min(img.width, max((x2 - x1) * (1 + 2 * CROP_MARGIN), floor))
+    h = min(img.height, max((y2 - y1) * (1 + 2 * CROP_MARGIN), floor))
+    left = min(max(0, (x1 + x2 - w) / 2), img.width - w)
+    top = min(max(0, (y1 + y2 - h) / 2), img.height - h)
+    piece = img.crop((int(left), int(top), int(left + w), int(top + h)))
     piece.thumbnail((CROP_MAX_SIDE, CROP_MAX_SIDE))
     out = io.BytesIO()
     piece.save(out, "JPEG", quality=85)
@@ -163,7 +172,7 @@ async def target(meta, agent_id: str, img: Image.Image, frame: bytes, label: str
         except Exception as e:  # noqa: BLE001 - segmentation is optional; the draft stands without it
             logger.warning("lens.segment_failed agent=%s err=%s", agent_id, e)
         if box:
-            crop_jpeg = crop(img, box)
+            crop_jpeg = await asyncio.to_thread(crop, img, box)
             evidence.append(await asyncio.to_thread(store, agent_id, crop_jpeg))
     return {
         "target": {"label": label, "box": list(box) if box else None},
@@ -173,7 +182,7 @@ async def target(meta, agent_id: str, img: Image.Image, frame: bytes, label: str
 
 
 async def intent(meta, agent_id: str, utterance: str, jpeg: bytes, store=_store) -> Dict[str, Any]:
-    img, frame = normalize_frame(jpeg)
+    img, frame = await asyncio.to_thread(normalize_frame, jpeg)
     draft = await _draft(meta, utterance, frame)
     label = str(draft.get("target_label") or "").strip()[:80]
     return {

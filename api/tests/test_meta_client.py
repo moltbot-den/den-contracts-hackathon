@@ -170,6 +170,22 @@ async def test_a_content_filter_400_is_retried_because_the_filter_flaps():
 
 
 @respx.mock
+async def test_a_persistently_filtered_prompt_logs_warning_not_error(caplog):
+    """The error log must mean 'someone acts': a refused prompt is per-input, a 500 is not."""
+    respx.post(f"{BASE}/chat/completions").mock(return_value=httpx.Response(400, json={"error": {"code": "content_policy_violation"}}))
+    client = MetaClient(settings=_settings(), guard=_stub_guard())
+    with patch("services.meta_client.asyncio.sleep", new=AsyncMock()), caplog.at_level("WARNING"):
+        with pytest.raises(MetaAPIError):
+            await client.create_chat_completion({"model": "muse-spark-1.3", "messages": []})
+    assert [r.levelname for r in caplog.records if "meta_api.error" in r.message] == ["WARNING"]
+    caplog.clear()
+    respx.post(f"{BASE}/chat/completions").mock(return_value=httpx.Response(500, text="boom"))
+    with caplog.at_level("WARNING"), pytest.raises(MetaAPIError):
+        await client.create_chat_completion({"model": "muse-spark-1.3", "messages": []})
+    assert [r.levelname for r in caplog.records if "meta_api.error" in r.message] == ["ERROR"]
+
+
+@respx.mock
 async def test_background_create_reserves_the_worst_case_until_it_finishes():
     # A queued Wonder response has no usage yet. Booking nothing would let many
     # queued plans pass the cap check at once; booking the worst case cannot.

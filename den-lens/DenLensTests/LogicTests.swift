@@ -33,6 +33,21 @@ final class GuideSplitterTests: XCTestCase {
         XCTAssertEqual(pages[1].body, "body")
     }
 
+    func testTablesQuotesAndJobIdsDoNotReachTheLens() {
+        let md = """
+        ## 1. Identification — Job 1-01
+        | Item | Result |
+        |---|---|
+        | Model | Unknown |
+        > Confirm the nameplate.
+        * Brass body
+        """
+        let pages = GuideSplitter.pages(from: md)
+        XCTAssertEqual(pages.count, 1)
+        XCTAssertEqual(pages[0].title, "1. Identification")
+        XCTAssertEqual(pages[0].body, "Item: Result\nModel: Unknown\nConfirm the nameplate.\n• Brass body")
+    }
+
     func testPlainTextIsOnePage() {
         XCTAssertEqual(GuideSplitter.pages(from: "Just a paragraph.").map(\.body), ["Just a paragraph."])
         XCTAssertTrue(GuideSplitter.pages(from: "  \n").isEmpty)
@@ -55,6 +70,24 @@ final class SSEParserTests: XCTestCase {
         var p = SSEParser()
         let events = p.feed(Data("data: one\r\ndata: two\r\n\r\n".utf8))
         XCTAssertEqual(events, [SSEEvent(id: nil, event: "message", data: "one\ntwo")])
+    }
+
+    func testReconnectDropsTheHalfEventButKeepsTheResumeID() {
+        var p = SSEParser()
+        XCTAssertTrue(p.feed(Data("id: 3\nevent: job.state\ndata: {\"half\":".utf8)).isEmpty)
+        p.resetPartial()
+        let events = p.feed(Data("data: fresh\n\n".utf8))
+        XCTAssertEqual(events, [SSEEvent(id: nil, event: "message", data: "fresh")])
+        XCTAssertEqual(p.lastEventID, "3")
+    }
+
+    func testOverwritingAKeychainValueReplacesIt() {
+        defer { Keychain.saveASSToken("") }
+        XCTAssertTrue(Keychain.saveASSToken("first"))
+        XCTAssertTrue(Keychain.saveASSToken(" second "))
+        XCTAssertEqual(Keychain.loadASSToken(), "second")
+        XCTAssertTrue(Keychain.saveASSToken(""))
+        XCTAssertNil(Keychain.loadASSToken())
     }
 
     func testBlankLinesWithoutDataEmitNothing() {

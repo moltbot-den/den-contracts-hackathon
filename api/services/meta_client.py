@@ -261,7 +261,10 @@ class MetaClient:
                 await asyncio.sleep(1.0)
                 continue
             if resp.status_code != 200:
-                logger.error("meta_api.error %s %s -> %d: %s", method, path, resp.status_code, resp.text[:500])
+                # A prompt Meta's filter refuses even after retries is a per-input outcome, not an outage.
+                filtered = resp.status_code == 400 and "content_policy_violation" in resp.text
+                (logger.warning if filtered else logger.error)(
+                    "meta_api.error %s %s -> %d: %s", method, path, resp.status_code, resp.text[:500])
                 raise MetaAPIError(f"Meta API returned {resp.status_code}", status_code=resp.status_code)
             return resp.json()
         raise AssertionError("unreachable")

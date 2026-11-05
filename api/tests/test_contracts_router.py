@@ -260,6 +260,13 @@ def test_public_view_shows_marathon_progress_but_never_leases_or_evidence():
                                             "verifier_rejections": 1}
 
 
+def test_public_view_keeps_the_child_budget_the_live_page_prints():
+    from routers.contracts import _public_view
+
+    ev = [{"seq": 1, "type": "marathon.child_started", "payload": {"child": "ct_c1", "budget_cents": 200, "response_id": "x"}}]
+    assert _public_view({"id": "ct_m"}, [], ev)["events"][0]["payload"] == {"child": "ct_c1", "budget_cents": 200}
+
+
 async def test_a_retried_create_with_the_same_key_returns_the_first_contract():
     """Muse may retry a create after a timeout; a second contract would escrow the budget twice."""
     from uuid import uuid4

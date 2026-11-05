@@ -14,6 +14,7 @@ Spark decides the level with two function tools (`ask_my_crew`, `offer_hire`). T
 is sent to Spark once and never stored; only an offered contract's SAM crop is kept.
 """
 
+import asyncio
 import json
 import logging
 import re
@@ -147,7 +148,7 @@ async def ask(meta, svc, agent_id: str, utterance: str, jpeg: Optional[bytes] = 
     img = frame = None
     content: List[Dict[str, Any]] = [{"type": "input_text", "text": utterance}]
     if jpeg is not None:
-        img, frame = lens.normalize_frame(jpeg)
+        img, frame = await asyncio.to_thread(lens.normalize_frame, jpeg)  # PIL decode: off the event loop
         content.append({"type": "input_image", "image_url": lens._data_url(frame)})
     elif image_url:
         content.append({"type": "input_image", "image_url": image_url})
@@ -215,7 +216,7 @@ async def watch(meta, jpeg: bytes, steps: List[str], index: int, *, bucket: Opti
     """
     if not 0 <= index < len(steps):
         raise lens.LensError("index is outside the steps")
-    _, frame = lens.normalize_frame(jpeg)
+    _, frame = await asyncio.to_thread(lens.normalize_frame, jpeg)
     nxt = f" Next step: {steps[index + 1]}." if index + 1 < len(steps) else ""
     text = f"Step {index + 1} of {len(steps)}: {steps[index]}.{nxt}"
     response = await meta.create_response({
@@ -236,6 +237,19 @@ async def watch(meta, jpeg: bytes, steps: List[str], index: int, *, bucket: Opti
     return {"done": got["done"], "note": str(got.get("note") or "").strip()[:WATCH_NOTE_CHARS]}
 
 
+def _shrink_diagram(b64: str) -> str:
+    import base64
+    import io
+
+    from PIL import Image
+
+    img = Image.open(io.BytesIO(base64.b64decode(b64))).convert("RGB")
+    img.thumbnail((DIAGRAM_SIDE, DIAGRAM_SIDE))
+    out = io.BytesIO()
+    img.save(out, "JPEG", quality=85)
+    return base64.b64encode(out.getvalue()).decode()
+
+
 IMAGE_MODEL = "muse-image-1.0"
 DIAGRAM_SIDE = 600  # the Ray-Ban Display is 600x600
 
@@ -245,11 +259,6 @@ async def diagram(meta, step: str, context: str = "", *, bucket: Optional[str] =
 
     One image ($0.01), single pass, no search tools: the step text is all it needs.
     """
-    import base64
-    import io
-
-    from PIL import Image
-
     response = await meta.create_image({
         "model": IMAGE_MODEL,
         "prompt": (f"Diagram showing how to do this step, with no title or heading: {step}. {('Context: ' + context + '. ') if context else ''}"
@@ -266,11 +275,7 @@ async def diagram(meta, step: str, context: str = "", *, bucket: Optional[str] =
     data = (response.get("data") or [{}])[0].get("b64_json")
     if not data:
         raise lens.LensError("Muse Image returned no image")
-    img = Image.open(io.BytesIO(base64.b64decode(data))).convert("RGB")
-    img.thumbnail((DIAGRAM_SIDE, DIAGRAM_SIDE))
-    out = io.BytesIO()
-    img.save(out, "JPEG", quality=85)
-    return base64.b64encode(out.getvalue()).decode()
+    return await asyncio.to_thread(_shrink_diagram, data)
 
 
 FREE_ASKS_PER_DAY = 20 # den_ask and the network fallback, per agent; the community spend share caps the total

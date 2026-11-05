@@ -16,6 +16,12 @@ struct SSEParser {
     /// Last event id seen, for `Last-Event-ID` on reconnect.
     private(set) var lastEventID: String?
 
+    /// A dropped connection leaves half an event behind; the next stream must not merge into it. Keeps `lastEventID`.
+    mutating func resetPartial() {
+        buffer.removeAll()
+        id = nil; event = ""; dataLines = []
+    }
+
     mutating func feed(_ bytes: Data) -> [SSEEvent] {
         buffer.append(bytes)
         var out: [SSEEvent] = []

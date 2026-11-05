@@ -767,6 +767,11 @@ class TestContractsResource:
             "idempotency_key": "key-12345678",
         }
 
+    def test_id_is_url_encoded_like_the_typescript_client(self, client, mock_api) -> None:
+        route = mock_api.get("/contracts/a%2Fb%3Fx").mock(return_value=httpx.Response(200, json={}))
+        client.contracts.get("a/b?x")
+        assert route.called
+
     def test_cancel(self, client, mock_api) -> None:
         route = mock_api.post("/contracts/ct_1/cancel").mock(
             return_value=httpx.Response(200, json={"contract_id": "ct_1", "state": "cancelled"})

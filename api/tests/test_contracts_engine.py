@@ -65,7 +65,7 @@ class FakeMeta:
         user = payload["messages"][-1]["content"]
         job = user.split("\n", 1)[0]
         self.judged.append(job)
-        n = user.split("Acceptance criteria:\n", 1)[1].split("\n\nDeliverable:", 1)[0].count("\n") + 1
+        n = user.split("Acceptance criteria:\n", 1)[1].split("\n\n<deliverable-", 1)[0].count("\n") + 1
         ok = not (job in self.fail_once and self.judged.count(job) <= self.fail_n)
         verdict = {"criteria": [{"index": i, "pass": ok, "reason": "checked"} for i in range(n)]}
         return {"choices": [{"message": {"content": json.dumps(verdict)}}]}
@@ -594,3 +594,63 @@ async def test_a_job_whose_metered_cost_passes_its_budget_stops_unpaid():
     vision = next(j for j in await store.jobs(c["id"]) if j["capability"] == "vision")
     assert vision["state"] == "failed" and "over the job budget" in vision["failure_reason"]
     assert vision["pending_cost_cents"] == 426 and not vision.get("paid_cents")
+
+
+async def test_a_reworked_job_gets_a_fresh_deadline():
+    svc, store = NetworkService(get_firestore_client()), _store()
+    await _house(svc)
+    meta = FakeMeta(fail_first_judgment_of={"Task: Find a replacement and price."})
+    engine = Engine(store=store, svc=svc, meta=meta, owner="engine-test")
+    c = await store.create_contract(owner_agent=await _buyer("buyer-rw"), surface="cli", goal="Rework", budget_cents=2_000)
+
+    first = None
+    for _ in range(20):
+        await workers.serve_once(svc=svc, meta=meta)
+        await engine.tick()
+        research = next((j for j in await store.jobs(c["id"]) if j["capability"] == "research"), {})
+        if research.get("state") == "running" and research["fail_count"] == 0:
+            first = first or research["deadline_at"]
+        if research.get("fail_count") == 1 and research["state"] == "running":
+            break
+
+    assert first and research["deadline_at"] > first  # else a slow judge leaves the rework already overdue
+
+
+async def test_a_marathon_child_created_before_a_crash_is_adopted_not_duplicated():
+    from services.contracts import marathon
+
+    svc, store = NetworkService(get_firestore_client()), _store()
+    await _house(svc)
+    buyer = await _buyer("buyer-orphan", credits=5_000)
+    engine = Engine(store=store, svc=svc, meta=FakeMeta(), owner="engine-test")
+    m = await store.create_contract(owner_agent=buyer, surface="web", goal="Marathon", budget_cents=100,
+                                    public=True, kind=marathon.KIND)
+    for _ in range(5):  # draft -> planning -> hiring -> running; no child yet
+        await engine.tick()
+        if (await store.get(m["id"]))["state"] == "running":
+            break
+    # The instance died after creating the child and before logging it.
+    orphan = await store.create_contract(owner_agent=buyer, surface="web", goal=marathon.GOALS[0], budget_cents=200,
+                                         public=True, contract_id=f"ct_{m['id']}_0")
+    await engine.tick()
+
+    doc = await store.get(m["id"])
+    assert doc["current_child"] == orphan["id"] and doc["children_started"] == 1
+    assert len(await store.list_for_owner(buyer)) == 2  # the marathon and the one child
+
+
+async def test_a_tick_page_does_not_starve_the_contracts_past_it(monkeypatch):
+    from services.contracts import engine as engine_mod
+
+    monkeypatch.setattr(engine_mod, "TICK_PAGE", 2)
+    svc, store = NetworkService(get_firestore_client()), _store()
+    await _house(svc)
+    buyer = await _buyer("buyer-many", credits=100_000)
+    engine = Engine(store=store, svc=svc, meta=FakeMeta(), owner="engine-test")
+    ids = [(await store.create_contract(owner_agent=buyer, surface="cli", goal="Many", budget_cents=100))["id"]
+           for _ in range(3)]  # more than one tick's page of 2
+
+    await engine.tick()
+    await engine.tick()  # the two stepped first are newer now, so the third goes next
+
+    assert {(await store.get(i))["state"] for i in ids} == {"planning"}

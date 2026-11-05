@@ -1,7 +1,5 @@
 import AVFoundation
 import Foundation
-import MWDATCore
-import MWDATSpeech
 import Sentry
 import Speech
 
@@ -9,15 +7,12 @@ enum SpeechError: LocalizedError {
     case notAuthorized
     case unavailable
     case nothingHeard
-    /// The glasses mic failed before hearing anything: the caller falls back to the phone mic.
-    case glassesMicFailed
 
     var errorDescription: String? {
         switch self {
         case .notAuthorized: "Microphone or speech recognition permission was denied."
         case .unavailable: "Speech recognition is unavailable right now."
         case .nothingHeard: "Didn't hear anything. Try again."
-        case .glassesMicFailed: "The glasses microphone is unavailable."
         }
     }
 }
@@ -83,35 +78,6 @@ final class SpeechListener {
     private var restarts = 0
     private var routeObserver: NSObjectProtocol?
     private var onPartial: (@MainActor (String) -> Void)?
-    private var glasses: Speech?
-    private var glassesTokens: [AnyListenerToken] = []
-
-    /// One utterance from the glasses microphone: DAT Speech recognizes on the glasses, so no phone audio
-    /// session is touched. Same end-of-utterance rules as the phone path.
-    func listen(glasses speech: Speech, onPartial: @escaping @MainActor (String) -> Void) async throws -> String {
-        self.onPartial = onPartial
-        latest = ""
-        glasses = speech
-        Log.info("speech", "listening on the glasses mic")
-        return try await withCheckedThrowingContinuation { cont in
-            continuation = cont
-            glassesTokens = [
-                speech.transcriptionPublisher.listen { result in
-                    Task { @MainActor [weak self] in self?.handle(text: result.text, isFinal: result.isFinal, failed: false) }
-                },
-                speech.errorPublisher.listen { error in
-                    Task { @MainActor [weak self] in
-                        Log.info("speech", "glasses mic error: \(error)")
-                        guard let self else { return }
-                        if self.latest.isEmpty { self.finish(.failure(SpeechError.glassesMicFailed)) } else { self.finish(nil) }
-                    }
-                },
-            ]
-            speech.start()
-            silence = SpeechListener.after(8) { [weak self] in self?.finish(.failure(SpeechError.nothingHeard), onlyIfEmpty: true) }
-            cap = SpeechListener.after(15) { [weak self] in self?.finish(nil) }
-        }
-    }
 
     func listen(onPartial: @escaping @MainActor (String) -> Void) async throws -> String {
         guard await Self.authorize() else { throw SpeechError.notAuthorized }
@@ -123,7 +89,7 @@ final class SpeechListener {
         try audio.setActive(true, options: .notifyOthersOnDeactivation)
         let inputs = audio.availableInputs ?? []
         if let mic = inputs.first(where: { $0.portType == .builtInMic }) {
-            try audio.setPreferredInput(mic)
+            try? audio.setPreferredInput(mic)  // best effort: failing here must not leave the session active
         }
         Log.info("speech", "listening; available \(inputs.map { "\($0.portType.rawValue):\($0.portName)" }); input \(audio.currentRoute.inputs.map(\.portName))")
 
@@ -141,7 +107,15 @@ final class SpeechListener {
             Task { @MainActor in self?.restartAfterRouteChange() }
         }
         engine.prepare()
-        try engine.start()
+        do { try engine.start() } catch {
+            // Nothing is listening yet, so finish() would not run: release the tap, observer and audio session here.
+            engine.inputNode.removeTap(onBus: 0)
+            if let routeObserver { NotificationCenter.default.removeObserver(routeObserver) }
+            routeObserver = nil
+            self.engine = nil
+            try? audio.setActive(false, options: .notifyOthersOnDeactivation)
+            throw error
+        }
 
         return try await withCheckedThrowingContinuation { cont in
             continuation = cont
@@ -229,7 +203,7 @@ final class SpeechListener {
         Log.info("speech", "stopped; \(latest.count) chars; \(failure.map { "\($0)" } ?? "end of utterance")")
         let level = box.takeLevel()
         Log.info("speech", "audio; \(level.buffers) buffers; peak \(level.peak)")
-        if glasses == nil { SentrySDK.capture(message: "speech capture ended: \(latest.count) chars") }  // ponytail: demo diagnostics; drop once speech is proven
+        SentrySDK.capture(message: "speech capture ended: \(latest.count) chars")  // ponytail: demo diagnostics; drop once speech is proven
         silence?.cancel()
         cap?.cancel()
         engine?.inputNode.removeTap(onBus: 0)
@@ -241,13 +215,7 @@ final class SpeechListener {
         if let routeObserver { NotificationCenter.default.removeObserver(routeObserver) }
         routeObserver = nil
         engine = nil; request = nil; task = nil; onPartial = nil; recognizer = nil
-        if let glasses {
-            glasses.stop()
-            glassesTokens = []
-            self.glasses = nil
-        } else {
-            try? AVAudioSession.sharedInstance().setActive(false, options: .notifyOthersOnDeactivation)
-        }
+        try? AVAudioSession.sharedInstance().setActive(false, options: .notifyOthersOnDeactivation)
         switch failure {
         case .failure(let e): cont.resume(throwing: e)
         case .success(let s): cont.resume(returning: s)

@@ -4,7 +4,6 @@ import MWDATCore
 import MWDATDisplay
 import MWDATInputs
 import MWDATMockDevice
-import MWDATSpeech
 import Observation
 import Sentry
 import UIKit
@@ -60,7 +59,6 @@ final class GlassesController {
     @ObservationIgnored private var inputsToken: AnyListenerToken?
     /// Inputs drops events until it is active (activation is asynchronous).
     @ObservationIgnored private(set) var inputsActive = false
-    @ObservationIgnored private var speech: Speech?
     @ObservationIgnored private var voice: VoiceInvocationsStream?
     @ObservationIgnored private var voiceTokens: [AnyListenerToken] = []
     @ObservationIgnored private var voiceTask: Task<Void, Never>?
@@ -152,15 +150,6 @@ final class GlassesController {
         } catch {
             Log.info("glasses.inputs", "unavailable: \(error)")  // not enabled in WDC: the phone and lens buttons still work
         }
-    }
-
-    /// The glasses microphone (on-device speech), or nil when it is unavailable and the phone mic should be used.
-    func glassesSpeech() -> Speech? {
-        guard let session, isReady, !usingMock else { return nil }
-        if speech == nil {
-            do { speech = try session.addSpeech() } catch { Log.info("glasses.speech", "unavailable: \(error)") }
-        }
-        return speech
     }
 
     // MARK: Registration
@@ -270,7 +259,6 @@ final class GlassesController {
         inputsTask = nil
         inputsToken = nil
         inputsActive = false
-        speech = nil
         display = nil
         camera = nil
         session = nil
@@ -311,7 +299,7 @@ final class GlassesController {
             cont.yield(.failed(error.localizedDescription))
         }.store(in: bag)
         let watchdog = Task {
-            try? await Task.sleep(for: .seconds(30))
+            do { try await Task.sleep(for: .seconds(30)) } catch { return }  // cancelled: the capture already ended
             cont.yield(.failed("timed out"))
         }
         defer {

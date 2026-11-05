@@ -32,7 +32,7 @@ enum GuideSplitter {
         }
 
         for raw in markdown.replacingOccurrences(of: "\r\n", with: "\n").split(separator: "\n", omittingEmptySubsequences: false) {
-            let line = String(raw)
+            guard let line = plainLine(String(raw)) else { continue }
             let step = numberedStep(line)
             if let title = heading(line) ?? step {
                 if current == nil, !intro.joined().trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
@@ -53,6 +53,20 @@ enum GuideSplitter {
         }
         // A bare heading (e.g. "# Guide" directly followed by "1. ...") adds nothing.
         return pages.filter { $0.isStep || !$0.body.isEmpty || $0.imageURL != nil }
+    }
+
+    /// Markdown the display would show literally: tables become "a: b" lines, their rules and quote marks go.
+    /// nil means drop the line.
+    private static func plainLine(_ line: String) -> String? {
+        let t = line.trimmingCharacters(in: .whitespaces)
+        if t.contains("-"), t.contains("|"), t.range(of: #"^[\s|:\-]+$"#, options: .regularExpression) != nil { return nil }
+        if t.hasPrefix("|") {
+            let cells = t.split(separator: "|").map { $0.trimmingCharacters(in: .whitespaces) }.filter { !$0.isEmpty }
+            return cells.count == 2 ? "\(cells[0]): \(cells[1])" : cells.joined(separator: " · ")
+        }
+        if t.hasPrefix("> ") { return String(t.dropFirst(2)) }
+        if t.hasPrefix("* ") { return "• " + t.dropFirst(2) }
+        return line
     }
 
     private static func heading(_ line: String) -> String? {
@@ -90,6 +104,7 @@ enum GuideSplitter {
             .replacingOccurrences(of: "__", with: "")
             .replacingOccurrences(of: "`", with: "")
             .replacingOccurrences(of: #"\[([^\]]+)\]\([^)]*\)"#, with: "$1", options: .regularExpression)
+            .replacingOccurrences(of: #"\s*[—–-]\s*Job \d+-\d+\b"#, with: "", options: .regularExpression)
             .trimmingCharacters(in: .whitespaces)
     }
 }

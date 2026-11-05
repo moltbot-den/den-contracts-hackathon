@@ -159,3 +159,13 @@ async def test_an_expired_channel_is_abandoned_after_three_reverted_claims():
             await ch.pay_job(cid, "1-01", worker, 600, consumer_agent=contractor)
     assert len([k for k in chain.keys if ":claim:" in k]) == MAX_STEP_ATTEMPTS  # no gas spent after giving up
     assert (await ch._ref(f"ch_{cid}_1-01").get()).to_dict()["state"] == "failed"
+
+
+async def test_a_worker_without_a_wallet_is_abandoned_not_retried_forever():
+    # ChannelError would be retried every tick, holding the whole escrow and the contract open.
+    ch, contractor, _, cid = await _setup(FakeChain())
+    no_wallet = f"nowallet-{uuid4().hex[:6]}"
+    await get_firestore_client().create_agent({"agent_id": no_wallet, "status": "active"})
+
+    with pytest.raises(PayoutAbandoned):
+        await ch.pay_job(cid, "1-01", no_wallet, 600, consumer_agent=contractor)

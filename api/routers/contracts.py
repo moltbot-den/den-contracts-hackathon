@@ -308,7 +308,7 @@ async def cancel_contract(contract_id: str, agent: CurrentAgent) -> Dict[str, An
 PUBLIC_EVENT_KEYS = ("summary", "verdict", "agent", "worker", "paid_cents", "claim_tx", "open_tx", "rehire",
                      "refund_credits", "escrow_credits", "committed_cents", "reason", "model",
                      # marathon child events
-                     "child", "goal", "state", "spent_cents", "refund_credits_cents", "verifier_rejections", "jobs",
+                     "child", "goal", "state", "spent_cents", "budget_cents", "refund_credits_cents", "verifier_rejections", "jobs",
                      "failure_reason")
 _live_cache: Dict[str, Any] = {}
 LIVE_CACHE_SECONDS = 30

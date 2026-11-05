@@ -121,3 +121,27 @@ async def test_unreadable_image_and_empty_draft_are_refused():
     with pytest.raises(lens.LensError):
         await lens.intent(FakeMeta(draft={"goal": " ", "budget_usd": None, "acceptance_hints": [],
                                           "target_label": ""}), "agent-1", "x", _frame())
+
+
+def test_normalize_frame_rejects_decompression_bomb():
+    import io
+
+    import pytest
+    from PIL import Image
+
+    from services.contracts import lens
+
+    buf = io.BytesIO()
+    Image.new("1", (20_000, 20_000)).save(buf, "PNG")  # a few KB on the wire, 400M pixels decoded
+    assert len(buf.getvalue()) < 1_000_000
+    with pytest.raises(lens.LensError):
+        lens.normalize_frame(buf.getvalue())
+
+
+def test_a_small_target_keeps_enough_context_to_read_and_a_big_one_is_not_cut():
+    img = Image.new("RGB", (1000, 600))
+    small = Image.open(io.BytesIO(lens.crop(img, (980, 590, 1000, 600))))
+    assert min(small.size) >= 300, "a 20-pixel box still yields a readable crop"
+    assert small.size[0] < 1000, "and never the full frame"
+    big = Image.open(io.BytesIO(lens.crop(img, (100, 100, 900, 500))))
+    assert big.size[0] >= 512 or big.size[1] >= 512

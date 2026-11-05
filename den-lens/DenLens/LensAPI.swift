@@ -152,6 +152,7 @@ struct LensAPI: Sendable {
                 var failures = 0
                 while !Task.isCancelled {
                     do {
+                        parser.resetPartial()
                         var req = try request("contracts/\(contractID)/stream", accept: "text/event-stream")
                         req.timeoutInterval = 3600
                         if let last = parser.lastEventID { req.setValue(last, forHTTPHeaderField: "Last-Event-ID") }

@@ -98,3 +98,33 @@ async def test_mcp_returns_the_photo_as_image_content():
     assert got["isError"] is False
     assert [c["type"] for c in got["content"]][:2] == ["text", "image"]
     assert got["content"][1]["mimeType"] == "image/jpeg"
+
+
+async def test_an_unfetched_photo_is_swept_once_its_request_expires():
+    from datetime import timedelta
+
+    fs, svc, wearer, helper, _ = await _crew()
+    rid = (await lens_photo.request(fs, svc, helper, wearer, "Label please"))["request_id"]
+    await lens_photo.answer(fs, wearer, rid, _jpeg())
+    ref = lens_photo._col(fs).document(rid)
+    assert (await ref.get()).to_dict()["photo_b64"]
+    await ref.update({"expires_at": lens_photo._now() - timedelta(seconds=1)})
+
+    await lens_photo.pending(fs, wearer)  # the wearer's next look sweeps it
+
+    assert not (await ref.get()).exists
+    with pytest.raises(lens_photo.PhotoRequestError) as e:
+        await lens_photo.fetch(fs, helper, rid)
+    assert e.value.status == 404
+
+
+async def test_a_sent_photo_cannot_be_fetched_after_it_expires():
+    from datetime import timedelta
+
+    fs, svc, wearer, helper, _ = await _crew()
+    rid = (await lens_photo.request(fs, svc, helper, wearer, "Label please"))["request_id"]
+    await lens_photo.answer(fs, wearer, rid, _jpeg())
+    await lens_photo._col(fs).document(rid).update({"expires_at": lens_photo._now() - timedelta(seconds=1)})
+    got = await lens_photo.fetch(fs, helper, rid)
+    assert got["state"] == "expired" and "image_jpeg_b64" not in got
+    assert not (await lens_photo._col(fs).document(rid).get()).exists

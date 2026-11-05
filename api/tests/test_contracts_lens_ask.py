@@ -21,6 +21,7 @@ Why these matter:
 import io
 import json
 import os
+import threading
 from types import SimpleNamespace
 
 import pytest
@@ -97,6 +98,17 @@ async def test_a_plain_answer_sends_and_stores_nothing(crews):
     assert out["sources"] == [{"title": "poolweb.com", "url": "https://www.poolweb.com/impeller"}]
     assert out["crew"] is None and out["hire"] is None and net.sent == []
     assert {"type": "web_search"} in meta.payloads[0]["tools"]
+
+
+async def test_image_decoding_runs_off_the_event_loop(crews, monkeypatch):
+    loop_thread, seen = threading.get_ident(), []
+    real = lens_ask.lens.normalize_frame
+    monkeypatch.setattr(lens_ask.lens, "normalize_frame", lambda j: (seen.append(threading.get_ident()), real(j))[1])
+
+    await lens_ask.ask(FakeMeta([_message("ok")]), FakeNet(), "wearer", "q", _jpeg(), store=_no_store)
+    await lens_ask.watch(FakeMeta([_message('{"done": true}')]), _jpeg(), ["a"], 0)
+
+    assert len(seen) == 2 and loop_thread not in seen
 
 
 async def test_a_task_goes_to_the_wearers_own_crew_not_the_house(crews):

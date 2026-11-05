@@ -159,13 +159,9 @@ final class LensFlow {
         if let thread = answer.crew?.threadId { watchCrew(thread) }
     }
 
-    /// The glasses mic first; the phone mic when the glasses can't listen (not enabled, simulated glasses).
+    /// The phone mic: the glasses mic does not deliver speech on real glasses, and waiting on it cost 8 s of silence before any fallback.
     private func listen() async throws -> String {
-        let partial: @MainActor (String) -> Void = { [weak self] in self?.phase = .listening(partial: $0) }
-        if let mic = glasses.glassesSpeech() {
-            do { return try await speech.listen(glasses: mic, onPartial: partial) } catch SpeechError.glassesMicFailed {}
-        }
-        return try await speech.listen(onPartial: partial)
+        try await speech.listen { [weak self] in self?.phase = .listening(partial: $0) }
     }
 
     // MARK: Answer and crew
@@ -258,6 +254,8 @@ final class LensFlow {
     /// The plan is waiting for the owner. The card shows budget and risk flags; the pinch signs with Face ID.
     private func askApproval(_ contract: Contract, note: String = "") async {
         if case .approve(_, let shown, _) = phase, shown.id == contract.id, note.isEmpty { return }
+        // A stream event during Face ID must not swap the card back under the wearer's thumb.
+        if case .signing = phase { return }
         guard let approvals else { return fail("This contract needs approval. Approve it from the web or CLI.") }
         do {
             let request = try await approvals.request(contractID: contract.id)
@@ -322,6 +320,7 @@ final class LensFlow {
             }
             try? await Task.sleep(for: .seconds(5))
         }
+        guard !Task.isCancelled else { return }  // cancelled mid-sleep: the wearer already reset; no stale error card
         fail("The contract is still running. Check the phone for status.")
     }
 
@@ -331,7 +330,7 @@ final class LensFlow {
            let obj = try? JSONSerialization.jsonObject(with: data) as? [String: Any] {
             detail = (obj["message"] ?? obj["reason"] ?? obj["verdict"] ?? obj["state"]).map { "\($0)" } ?? ""
         }
-        return detail.isEmpty ? event.event : "\(event.event): \(detail)"
+        return detail.isEmpty ? event.event : detail
     }
 
     // MARK: Result

@@ -6,6 +6,7 @@ Wraps the ``/contracts`` API endpoints.
 from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any, Dict, List, Optional
+from urllib.parse import quote
 
 from moltbotden._transport import raise_for_status
 
@@ -85,7 +86,7 @@ class ContractsResource:
 
     def get(self, contract_id: str) -> Dict[str, Any]:
         """Get one contract with its jobs."""
-        response = self._client.get(f"/contracts/{contract_id}")
+        response = self._client.get(f"/contracts/{quote(contract_id, safe='')}")
         raise_for_status(response)
         return response.json()
 
@@ -112,13 +113,13 @@ class ContractsResource:
         kwargs: Dict[str, Any] = {}
         if approval is not None:
             kwargs["json"] = {"approval": approval}
-        response = self._client.post(f"/contracts/{contract_id}/approve", **kwargs)
+        response = self._client.post(f"/contracts/{quote(contract_id, safe='')}/approve", **kwargs)
         raise_for_status(response)
         return response.json()
 
     def cancel(self, contract_id: str) -> Dict[str, Any]:
         """Cancel: settle verified work, refund the rest."""
-        response = self._client.post(f"/contracts/{contract_id}/cancel")
+        response = self._client.post(f"/contracts/{quote(contract_id, safe='')}/cancel")
         raise_for_status(response)
         return response.json()
 
@@ -155,7 +156,7 @@ class AsyncContractsResource:
 
     async def get(self, contract_id: str) -> Dict[str, Any]:
         """Get one contract with its jobs."""
-        response = await self._client.get(f"/contracts/{contract_id}")
+        response = await self._client.get(f"/contracts/{quote(contract_id, safe='')}")
         raise_for_status(response)
         return response.json()
 
@@ -172,12 +173,12 @@ class AsyncContractsResource:
         kwargs: Dict[str, Any] = {}
         if approval is not None:
             kwargs["json"] = {"approval": approval}
-        response = await self._client.post(f"/contracts/{contract_id}/approve", **kwargs)
+        response = await self._client.post(f"/contracts/{quote(contract_id, safe='')}/approve", **kwargs)
         raise_for_status(response)
         return response.json()
 
     async def cancel(self, contract_id: str) -> Dict[str, Any]:
         """Cancel: settle verified work, refund the rest."""
-        response = await self._client.post(f"/contracts/{contract_id}/cancel")
+        response = await self._client.post(f"/contracts/{quote(contract_id, safe='')}/cancel")
         raise_for_status(response)
         return response.json()

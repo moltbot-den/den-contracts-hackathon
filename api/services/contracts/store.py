@@ -210,6 +210,12 @@ class ContractStore:
                 raise NotFound(contract_id)
             doc = snap.to_dict()
             _check_lease(doc, lease_owner)
+            if job_updates and "paid_cents" in job_updates:
+                # Two payers (a stepping engine and a settle run) can both finish the same payout;
+                # only the first records it, or spent_cents counts it twice and the refund shrinks.
+                job_snap = await self._job(contract_id, job_id).get(transaction=tx)
+                if job_snap.to_dict().get("paid_cents"):
+                    return
             if job_updates:
                 tx.update(self._job(contract_id, job_id), {**job_updates, "updated_at": datetime.now(timezone.utc)})
             self._append(tx, contract_id, doc, dict(updates or {}), type=type, job_id=job_id, payload=payload or {})
@@ -307,7 +313,9 @@ class ContractStore:
             until = doc.get("lease_until")
             if until and until > now and doc.get("lease_owner") != owner:
                 return False
-            tx.update(self._contract(contract_id), {"lease_owner": owner, "lease_until": now + LEASE})
+            # updated_at moves too, so tick (oldest-updated first) rotates through every active contract.
+            tx.update(self._contract(contract_id), {"lease_owner": owner, "lease_until": now + LEASE,
+                                                    "updated_at": now})
             return True
 
         return await run_transaction(_run, self.db)

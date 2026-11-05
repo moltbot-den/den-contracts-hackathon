@@ -8,7 +8,7 @@ import { AutoRefresh } from '../_components/auto-refresh';
 import { ContractView } from '../_components/contract-view';
 
 // Server-rendered; a running contract re-renders every 10 s through AutoRefresh.
-export const revalidate = 10;
+export const dynamic = 'force-dynamic';
 
 interface ContractPageProps {
   params: Promise<{ id: string }>;

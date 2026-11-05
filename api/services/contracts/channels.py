@@ -110,7 +110,12 @@ class Channels:
                       consumer_agent: str) -> Dict[str, Any]:
         """Drive this job's payout until the claim is on chain and the close is requested. Idempotent."""
         ref = self._ref(f"ch_{contract_id}_{job_id}")
-        consumer, worker = await self._wallet(consumer_agent), await self._wallet(worker_agent)
+        consumer = await self._wallet(consumer_agent)
+        try:
+            worker = await self._wallet(worker_agent)
+        except ChannelError as e:
+            # No wallet never fixes itself in a retry loop: abandon so the budget is refunded and the contract moves on.
+            raise PayoutAbandoned(str(e)) from e
         units = amount_cents * self.cfg["units_per_cent"]
         try:
             await ref.create({

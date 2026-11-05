@@ -7,6 +7,7 @@ wearer has at most MAX_PENDING open requests. The photo lives in the request doc
 requester fetches it, then the doc is deleted; unanswered requests lapse after TTL.
 """
 
+import asyncio
 import base64
 import io
 import uuid
@@ -38,7 +39,7 @@ def _col(fs):
 
 
 def _live(doc: Dict[str, Any]) -> bool:
-    return doc["state"] != "pending" or doc["expires_at"] > _now()
+    return doc["expires_at"] > _now()  # a sent photo expires too, TTL after it was sent
 
 
 async def request(fs, svc, requester: str, wearer: str, reason: str) -> Dict[str, Any]:
@@ -61,9 +62,21 @@ async def request(fs, svc, requester: str, wearer: str, reason: str) -> Dict[str
 
 async def pending(fs, wearer: str) -> List[Dict[str, Any]]:
     """The wearer's open requests, oldest first. Filtered here so no composite index is needed."""
-    docs = [d.to_dict() for d in await _col(fs).where(filter=FieldFilter("wearer", "==", wearer)).limit(50).get()]
+    snaps = await _col(fs).where(filter=FieldFilter("wearer", "==", wearer)).limit(50).get()
+    docs = [d.to_dict() for d in snaps]
+    for d in docs:  # sweep: nothing of an expired request (photo included) outlives its expiry here
+        if not _live(d):
+            await _col(fs).document(d["id"]).delete()
     return sorted(({k: d[k] for k in ("id", "requester", "reason", "created_at", "expires_at")}
                    for d in docs if d["state"] == "pending" and _live(d)), key=lambda d: d["created_at"])
+
+
+def _shrink(jpeg: bytes) -> str:
+    img, _ = lens.normalize_frame(jpeg)
+    img.thumbnail((PHOTO_MAX_SIDE, PHOTO_MAX_SIDE))
+    out = io.BytesIO()
+    img.save(out, "JPEG", quality=80)
+    return base64.b64encode(out.getvalue()).decode()
 
 
 async def answer(fs, wearer: str, request_id: str, jpeg: Optional[bytes]) -> Dict[str, Any]:
@@ -75,13 +88,9 @@ async def answer(fs, wearer: str, request_id: str, jpeg: Optional[bytes]) -> Dic
         raise PhotoRequestError(404, "No such photo request")
     if doc["state"] != "pending":
         raise PhotoRequestError(409, "This request was already answered")
-    update: Dict[str, Any] = {"state": "declined", "answered_at": _now()}
+    update: Dict[str, Any] = {"state": "declined", "answered_at": _now(), "expires_at": _now() + TTL}
     if jpeg is not None:
-        img, _ = lens.normalize_frame(jpeg)
-        img.thumbnail((PHOTO_MAX_SIDE, PHOTO_MAX_SIDE))
-        out = io.BytesIO()
-        img.save(out, "JPEG", quality=80)
-        update = {**update, "state": "sent", "photo_b64": base64.b64encode(out.getvalue()).decode()}
+        update = {**update, "state": "sent", "photo_b64": await asyncio.to_thread(_shrink, jpeg)}
     await ref.update(update)
     return {"request_id": request_id, "state": update["state"]}
 

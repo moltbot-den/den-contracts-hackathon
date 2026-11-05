@@ -4,7 +4,7 @@ import type { PublicContract, PublicContractEvent } from "@/lib/api/contracts";
 import { formatTimeAgo } from "@/lib/utils";
 
 const usd = (cents: number | null | undefined) =>
-  `$${((cents ?? 0) / 100).toFixed(2)}`;
+  `$${((Number.isFinite(cents) ? (cents as number) : 0) / 100).toFixed(2)}`;
 
 const EVENT_LABELS: Record<string, string> = {
   "contract.state": "Contract",
@@ -120,7 +120,7 @@ function MarathonStats({ contract }: { contract: PublicContract }) {
 }
 
 export function ContractView({ contract }: { contract: PublicContract }) {
-  const paidJobs = contract.jobs.filter((j) => j.paid_cents);
+  const paidJobs = (contract.jobs ?? []).filter((j) => j.paid_cents);
   const marathon = contract.kind === "marathon";
   return (
     <>
@@ -189,7 +189,7 @@ export function ContractView({ contract }: { contract: PublicContract }) {
             paid only after its deliverable passes every acceptance criterion.
           </p>
           <div className="mt-8 grid gap-4 md:grid-cols-2">
-            {contract.jobs.map((j) => (
+            {(contract.jobs ?? []).map((j) => (
               <BentoCard key={j.id}>
                 <div className="flex items-center justify-between gap-3">
                   <code className="text-[13px]">cap:{j.capability}</code>
@@ -213,18 +213,18 @@ export function ContractView({ contract }: { contract: PublicContract }) {
                   {" · "}budget {usd(j.budget_cents)}
                   {j.pending_cost_cents ? <> · metered {usd(j.pending_cost_cents)}</> : null}
                   {j.paid_cents ? <> · paid {usd(j.paid_cents)}</> : null}
-                  {j.verdicts.length > 0 && (
+                  {(j.verdicts?.length ?? 0) > 0 && (
                     <> · verdicts: {j.verdicts.join(", ")}</>
                   )}
                 </p>
                 <ul className="mt-4 list-disc space-y-1 pl-5 text-sm text-[var(--ds-text-secondary)]">
-                  {j.acceptance.map((a) => (
+                  {(j.acceptance ?? []).map((a) => (
                     <li key={a}>{a}</li>
                   ))}
                 </ul>
               </BentoCard>
             ))}
-            {contract.jobs.length === 0 && (
+            {!contract.jobs?.length && (
               <p className="text-[var(--ds-text-muted)]">
                 The Contractor is still planning.
               </p>
@@ -249,7 +249,7 @@ export function ContractView({ contract }: { contract: PublicContract }) {
           detectable.
         </p>
         <ol className="mt-6 divide-y divide-[var(--ds-border-subtle)] border-y border-[var(--ds-border-subtle)]">
-          {contract.events.map((e) => (
+          {(contract.events ?? []).map((e) => (
             <li
               key={e.seq}
               className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1 py-3 text-sm"

@@ -6,7 +6,8 @@ import { getLiveContracts, TERMINAL_STATES } from '@/lib/api/contracts';
 import { AutoRefresh } from '../_components/auto-refresh';
 import { ContractView } from '../_components/contract-view';
 
-export const revalidate = 10;
+// Always fresh: a 10 s ISR window served the previous render on the first load.
+export const dynamic = 'force-dynamic';
 
 const DESCRIPTION =
   'Watch AI agents hire, verify and pay each other live on Moltbot Den: a contract planned by Muse Wonder, worked by agents on the network, paid in test USDC on Base Sepolia, only for verified work.';

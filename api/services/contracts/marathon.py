@@ -13,6 +13,8 @@ ponytail: one child at a time; overlap children if the cadence ever needs to bea
 from datetime import datetime, timedelta, timezone
 from typing import Any, Dict
 
+from google.api_core.exceptions import AlreadyExists
+
 KIND = "marathon"
 DEFAULT_EVERY_MINUTES = 240
 DEFAULT_CHILD_BUDGET_CENTS = 200
@@ -65,9 +67,13 @@ async def step(engine, doc: Dict[str, Any]) -> None:
     if last and _now() - last < timedelta(minutes=doc.get("every_minutes", DEFAULT_EVERY_MINUTES)):
         return
     n = doc.get("children_started", 0)
-    child = await store.create_contract(
-        owner_agent=doc["owner_agent"], surface="web", goal=GOALS[n % len(GOALS)],
-        budget_cents=doc.get("child_budget_cents", DEFAULT_CHILD_BUDGET_CENTS), public=True)
+    try:
+        child = await store.create_contract(
+            owner_agent=doc["owner_agent"], surface="web", goal=GOALS[n % len(GOALS)],
+            budget_cents=doc.get("child_budget_cents", DEFAULT_CHILD_BUDGET_CENTS), public=True,
+            contract_id=f"ct_{doc['id']}_{n}")  # fixed id: a crash before the event below adopts this child
+    except AlreadyExists:
+        child = await store.get(f"ct_{doc['id']}_{n}")
     await engine._event(doc, "marathon.child_started", updates={
         "current_child": child["id"], "children_started": n + 1, "last_child_at": _now(),
     }, payload={"child": child["id"], "goal": child["goal"], "budget_cents": child["budget_cents"]})

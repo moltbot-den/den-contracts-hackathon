@@ -32,9 +32,11 @@ enum Keychain {
     static func saveAPIKey(_ key: String) -> Bool { save(key, account) }
 
     private static func save(_ key: String, _ account: String) -> Bool {
-        SecItemDelete(query(account) as CFDictionary)
         let trimmed = key.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !trimmed.isEmpty else { return true }
+        guard !trimmed.isEmpty else { SecItemDelete(query(account) as CFDictionary); return true }
+        // Update in place: delete-then-add lost the stored key whenever the add failed.
+        let update = SecItemUpdate(query(account) as CFDictionary, [kSecValueData as String: Data(trimmed.utf8)] as CFDictionary)
+        if update == errSecSuccess { return true }
         var q = query(account)
         q[kSecValueData as String] = Data(trimmed.utf8)
         q[kSecAttrAccessible as String] = kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly

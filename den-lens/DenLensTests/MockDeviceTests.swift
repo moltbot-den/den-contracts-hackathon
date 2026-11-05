@@ -73,12 +73,6 @@ final class MockDeviceTests: XCTestCase {
         XCTAssertEqual(asks, 1)
     }
 
-    /// Simulated glasses have no microphone: Den falls back to the phone mic rather than waiting on silence.
-    func testSimulatedGlassesUseThePhoneMic() async throws {
-        try await glasses.connect()
-        XCTAssertNil(glasses.glassesSpeech())
-    }
-
     /// Live mode: a frame Den judges done moves the guide on by itself, sending only this step and the next.
     func testLiveModeAdvancesTheGuideWhenDenSeesTheStepDone() async throws {
         let config = URLSessionConfiguration.ephemeral

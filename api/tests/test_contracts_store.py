@@ -261,3 +261,19 @@ async def test_released_lease_is_free_at_once_but_only_the_holder_can_release(st
     assert not await store.acquire_lease(c["id"], "run-2")
     await store.release_lease(c["id"], "run-1")
     assert await store.acquire_lease(c["id"], "run-2")
+
+
+@pytestmark_emulator
+async def test_a_payout_recorded_twice_counts_once(store):
+    # A stepping engine and a settle run can both finish the same payout: spent_cents must not double.
+    from google.cloud import firestore
+
+    c = await _new(store)
+    await store.create_job(c["id"], "1-01", budget_cents=600)
+    paid = dict(job_id="1-01", job_updates={"paid_cents": 600}, updates={"spent_cents": firestore.Increment(600)})
+    await store.append_event(c["id"], "job.paid", **paid)
+    await store.append_event(c["id"], "job.paid", **paid)
+
+    doc = await store.get(c["id"])
+    assert doc["spent_cents"] == 600
+    assert sum(e["type"] == "job.paid" for e in await store.events(c["id"])) == 1
